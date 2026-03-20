@@ -6,7 +6,12 @@
       "Bash(rm -rf node_modules package.json tsconfig.json .gitignore)",
       "Bash(yes)",
       "Bash(npm install:*)",
-      "Bash(npx shadcn@latest init -d)"
+      "Bash(npx shadcn@latest init -d)",
+      "Bash(npx shadcn@latest add dialog badge input label select textarea table card dropdown-menu sheet toast popover calendar separator tabs -y)",
+      "Bash(npx shadcn@latest add dialog badge input label select textarea table card dropdown-menu sheet sonner popover calendar separator tabs -y)",
+      "Bash(npx prisma:*)",
+      "Bash(grep -r \"TODO\\\\|FIXME\\\\|XXX\\\\|HACK\\\\|stub\\\\|not implemented\" /c/Users/thomas.lienard/projets-perso/recherche-appartement/src --include=*.ts --include=*.tsx)",
+      "Bash(ls -la /c/Users/thomas.lienard/projets-perso/recherche-appartement/*.db)"
     ]
   }
 }

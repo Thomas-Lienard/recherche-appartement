@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Listing {
+  id              String    @id @default(cuid())
+  url             String?
+  source          String?
+  title           String?
+  price           Float?
+  surface         Float?
+  rooms           Int?
+  address         String?
+  latitude        Float?
+  longitude       Float?
+  description     String?
+  photos          String    @default("[]")
+  status          String    @default("Nouveau")
+  notes           String?
+  contactEmail    String?
+  visitDate       DateTime?
+  calendarEventId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
