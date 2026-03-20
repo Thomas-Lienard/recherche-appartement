@@ -6,6 +6,8 @@ import { Nav } from "@/components/nav";
 import { ListingForm, type ListingFormData } from "@/components/listing-form";
 import { PhotoGallery } from "@/components/photo-gallery";
 import { StatusBadge } from "@/components/status-badge";
+import { SendEmailDialog } from "@/components/send-email-dialog";
+import { ScheduleVisitDialog } from "@/components/schedule-visit-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -251,6 +253,16 @@ export default function ListingDetailPage({
                   </div>
                 </>
               )}
+
+              {/* Actions: Email + Visite */}
+              <Separator />
+              <div className="flex flex-wrap gap-2">
+                <SendEmailDialog listing={listing} />
+                <ScheduleVisitDialog
+                  listing={{ id: listing.id, title: listing.title, address: listing.address }}
+                  onScheduled={fetchListing}
+                />
+              </div>
 
               {listing.description && (
                 <>

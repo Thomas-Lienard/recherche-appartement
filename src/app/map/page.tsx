@@ -56,7 +56,7 @@ export default function MapPage() {
       <main className="flex flex-col flex-1">
         <div className="flex items-center justify-between px-4 sm:px-6 py-4">
           <h1 className="text-xl font-semibold text-gray-900">Carte</h1>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter} onValueChange={(v) => v && setStatusFilter(v)}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Tous les statuts" />
             </SelectTrigger>

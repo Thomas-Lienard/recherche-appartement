@@ -11,7 +11,9 @@
       "Bash(npx shadcn@latest add dialog badge input label select textarea table card dropdown-menu sheet sonner popover calendar separator tabs -y)",
       "Bash(npx prisma:*)",
       "Bash(grep -r \"TODO\\\\|FIXME\\\\|XXX\\\\|HACK\\\\|stub\\\\|not implemented\" /c/Users/thomas.lienard/projets-perso/recherche-appartement/src --include=*.ts --include=*.tsx)",
-      "Bash(ls -la /c/Users/thomas.lienard/projets-perso/recherche-appartement/*.db)"
+      "Bash(ls -la /c/Users/thomas.lienard/projets-perso/recherche-appartement/*.db)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

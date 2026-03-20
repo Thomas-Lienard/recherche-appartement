@@ -94,10 +94,10 @@ export function AddListingDialog({ onCreated }: AddListingDialogProps) {
         if (!v) resetForm();
       }}
     >
-      <DialogTrigger asChild>
-        <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-          + Ajouter une annonce
-        </Button>
+      <DialogTrigger
+        render={<Button className="bg-emerald-600 hover:bg-emerald-700 text-white" />}
+      >
+        + Ajouter une annonce
       </DialogTrigger>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>

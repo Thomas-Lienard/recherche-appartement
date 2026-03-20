@@ -17,7 +17,7 @@ interface StatusSelectProps {
 
 export function StatusSelect({ value, onValueChange }: StatusSelectProps) {
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select value={value} onValueChange={(v) => v && onValueChange(v)}>
       <SelectTrigger className="w-[180px]">
         <SelectValue>
           <StatusBadge status={value} />
