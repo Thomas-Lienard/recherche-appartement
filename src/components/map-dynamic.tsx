@@ -1,14 +1,15 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { MapViewProps } from "./map-view";
 
-export const MapView = dynamic(
+export const MapView = dynamic<MapViewProps>(
   () => import("./map-view").then((mod) => mod.MapViewInner),
   {
     ssr: false,
     loading: () => (
-      <div className="flex items-center justify-center h-[600px] rounded-xl bg-gray-100">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600" />
+      <div className="flex items-center justify-center h-full w-full bg-[#F0F0F0] rounded-2xl">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#E5E5E5] border-t-[#CDEA68]" />
       </div>
     ),
   }

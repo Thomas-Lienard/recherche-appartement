@@ -1,14 +1,27 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Nav } from "@/components/nav";
-import { ListingTable } from "@/components/listing-table";
-import { AddListingDialog } from "@/components/add-listing-dialog";
-import type { ListingRow } from "@/components/listing-table-columns";
+import { ListingSidebar } from "@/components/listing-sidebar";
+import { MapView } from "@/components/map-dynamic";
+
+interface Listing {
+  id: string;
+  title: string | null;
+  price: number | null;
+  surface: number | null;
+  rooms: number | null;
+  address: string | null;
+  status: string;
+  latitude: number | null;
+  longitude: number | null;
+}
 
 export default function Dashboard() {
-  const [listings, setListings] = useState<ListingRow[]>([]);
+  const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [centerOnId, setCenterOnId] = useState<string | null>(null);
+  const [mobileView, setMobileView] = useState<"list" | "map">("list");
 
   const fetchListings = useCallback(async () => {
     try {
@@ -26,30 +39,59 @@ export default function Dashboard() {
     fetchListings();
   }, [fetchListings]);
 
-  return (
-    <>
-      <Nav />
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6 flex-1">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900">
-              Mes annonces
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              {listings.length} annonce{listings.length !== 1 ? "s" : ""}
-            </p>
-          </div>
-          <AddListingDialog onCreated={fetchListings} />
-        </div>
+  const handleCardSelect = (id: string) => {
+    setSelectedId(id);
+    setCenterOnId(id);
+  };
 
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600" />
-          </div>
+  const handleMarkerClick = (id: string) => {
+    setSelectedId(id);
+  };
+
+  return (
+    <div className="flex h-screen bg-[#F5F5F5]">
+      {/* Left panel - sidebar */}
+      <div className={`w-full md:w-[40%] lg:w-[38%] flex flex-col bg-white border-r border-[#E5E5E5] ${mobileView === "map" ? "hidden md:flex" : "flex"}`}>
+        <ListingSidebar
+          listings={listings}
+          selectedId={selectedId}
+          onSelect={handleCardSelect}
+          onRefresh={fetchListings}
+          loading={loading}
+        />
+      </div>
+
+      {/* Right panel - map */}
+      <div className={`flex-1 relative ${mobileView === "list" ? "hidden md:block" : "block"}`}>
+        <MapView
+          listings={listings}
+          selectedId={selectedId}
+          onMarkerClick={handleMarkerClick}
+          centerOnId={centerOnId}
+        />
+      </div>
+
+      {/* Mobile toggle */}
+      <button
+        onClick={() => setMobileView(mobileView === "list" ? "map" : "list")}
+        className="md:hidden fixed bottom-6 right-6 z-50 bg-[#1A1A1A] text-white rounded-full px-5 py-3 shadow-lg font-medium text-sm flex items-center gap-2 active:scale-95 transition-transform"
+      >
+        {mobileView === "list" ? (
+          <>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m0 0l3-3m-3 3l-3-3m12-3V15m0 0l3-3m-3 3l-3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+            </svg>
+            Carte
+          </>
         ) : (
-          <ListingTable data={listings} />
+          <>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            </svg>
+            Liste
+          </>
         )}
-      </main>
-    </>
+      </button>
+    </div>
   );
 }

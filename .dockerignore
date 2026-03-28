@@ -1,7 +1,29 @@
 node_modules
 .next
 .git
-*.db
-*.db-journal
 .env*
 !.env.example
+
+# IDE and editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# Claude Code
+.claude/settings.local.json
+
+# Docker
+docker-compose.override.yml
+
+# Build artifacts
+out
+build
+coverage
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Inputs directory
+inputs

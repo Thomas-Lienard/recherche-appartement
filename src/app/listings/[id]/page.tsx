@@ -3,18 +3,32 @@
 import { useEffect, useState, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import { Nav } from "@/components/nav";
-import { ListingForm, type ListingFormData } from "@/components/listing-form";
+import { EditableField } from "@/components/editable-field";
 import { PhotoGallery } from "@/components/photo-gallery";
 import { StatusBadge } from "@/components/status-badge";
 import { SendEmailDialog } from "@/components/send-email-dialog";
 import { ScheduleVisitDialog } from "@/components/schedule-visit-dialog";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { STATUSES, CAVE_OPTIONS, PARKING_OPTIONS } from "@/lib/constants";
 import { toast } from "sonner";
 
-interface Listing extends ListingFormData {
+interface Listing {
   id: string;
+  title?: string | null;
+  price?: number | null;
+  surface?: number | null;
+  rooms?: number | null;
+  address?: string | null;
+  description?: string | null;
+  notes?: string | null;
+  contactEmail?: string | null;
+  status?: string;
+  cave?: string;
+  parking?: string;
+  reference?: string | null;
+  url?: string | null;
+  source?: string | null;
+  photos?: string | string[];
   latitude?: number | null;
   longitude?: number | null;
   visitDate?: string | null;
@@ -31,9 +45,6 @@ export default function ListingDetailPage({
   const { id } = use(params);
   const router = useRouter();
   const [listing, setListing] = useState<Listing | null>(null);
-  const [editing, setEditing] = useState(false);
-  const [formData, setFormData] = useState<ListingFormData>({});
-  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchListing = useCallback(async () => {
@@ -45,7 +56,6 @@ export default function ListingDetailPage({
       }
       const data = await res.json();
       setListing(data);
-      setFormData(data);
     } catch {
       router.push("/");
     } finally {
@@ -56,29 +66,6 @@ export default function ListingDetailPage({
   useEffect(() => {
     fetchListing();
   }, [fetchListing]);
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/listings/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) {
-        toast.error("Erreur de sauvegarde");
-        return;
-      }
-      const updated = await res.json();
-      setListing(updated);
-      setEditing(false);
-      toast.success("Annonce mise a jour !");
-    } catch {
-      toast.error("Erreur de connexion");
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const handleDelete = async () => {
     if (!confirm("Supprimer cette annonce ?")) return;
@@ -91,12 +78,18 @@ export default function ListingDetailPage({
     }
   };
 
+  const handleFieldSaved = (field: string, newValue: string | number | null) => {
+    if (listing) {
+      setListing({ ...listing, [field]: newValue });
+    }
+  };
+
   if (loading) {
     return (
       <>
         <Nav />
         <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-200 border-t-emerald-600" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#E5E5E5] border-t-[#CDEA68]" />
         </div>
       </>
     );
@@ -122,190 +115,200 @@ export default function ListingDetailPage({
     <>
       <Nav />
       <main className="mx-auto max-w-5xl px-4 sm:px-6 py-6 flex-1">
-        {/* Back + actions */}
-        <div className="flex items-center justify-between mb-6">
+        {/* Actions bar */}
+        <div className="flex items-center justify-end mb-6">
           <Button
-            variant="ghost"
-            onClick={() => router.push("/")}
-            className="text-gray-600"
+            variant="outline"
+            size="sm"
+            className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
+            onClick={handleDelete}
           >
-            ← Retour
+            Supprimer
           </Button>
-          <div className="flex gap-2">
-            {!editing && (
-              <Button
-                variant="outline"
-                onClick={() => setEditing(true)}
-              >
-                Modifier
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-              onClick={handleDelete}
-            >
-              Supprimer
-            </Button>
-          </div>
         </div>
 
-        {editing ? (
-          <Card className="p-6">
-            <ListingForm
-              data={formData}
-              onChange={setFormData}
-              onSubmit={handleSave}
-              submitLabel="Sauvegarder"
-              loading={saving}
-            />
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setEditing(false);
-                setFormData(listing);
-              }}
-              className="mt-2"
-            >
-              Annuler
-            </Button>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Photos */}
-            <div>
-              <PhotoGallery photos={photos} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Photos */}
+          <div>
+            <PhotoGallery photos={photos} />
+          </div>
+
+          {/* Info */}
+          <div className="space-y-5">
+            {/* Title + Status */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <EditableField
+                  value={listing.title}
+                  field="title"
+                  listingId={id}
+                  type="text"
+                  displayClassName="text-2xl font-bold text-[#1A1A1A]"
+                  onSaved={(v) => handleFieldSaved("title", v)}
+                />
+                <EditableField
+                  value={listing.status || "Nouveau"}
+                  field="status"
+                  listingId={id}
+                  type="select"
+                  options={STATUSES.map((s) => ({ value: s, label: s }))}
+                  onSaved={(v) => handleFieldSaved("status", v)}
+                />
+              </div>
+              <div className="mt-3">
+                <EditableField
+                  value={listing.price}
+                  field="price"
+                  listingId={id}
+                  type="number"
+                  suffix=" €"
+                  displayClassName="text-3xl font-bold text-[#5F9530]"
+                  onSaved={(v) => handleFieldSaved("price", v)}
+                />
+              </div>
             </div>
 
-            {/* Info */}
-            <div className="space-y-6">
-              <div>
-                <div className="flex items-start justify-between gap-3">
-                  <h1 className="text-2xl font-semibold text-gray-900">
-                    {listing.title || "Sans titre"}
-                  </h1>
-                  <StatusBadge status={listing.status || "Nouveau"} />
-                </div>
-                {listing.price && (
-                  <p className="text-3xl font-bold text-emerald-600 mt-2">
-                    {listing.price.toLocaleString("fr-FR")} EUR
-                  </p>
-                )}
-              </div>
-
-              <Separator />
-
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                {listing.surface && (
-                  <div>
-                    <span className="text-gray-500">Surface</span>
-                    <p className="font-medium">{listing.surface} m2</p>
-                  </div>
-                )}
-                {listing.rooms && (
-                  <div>
-                    <span className="text-gray-500">Pieces</span>
-                    <p className="font-medium">{listing.rooms}</p>
-                  </div>
-                )}
+            {/* Details grid */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              <div className="grid grid-cols-2 gap-4">
+                <EditableField
+                  value={listing.surface}
+                  field="surface"
+                  listingId={id}
+                  type="number"
+                  suffix=" m²"
+                  label="Surface"
+                  onSaved={(v) => handleFieldSaved("surface", v)}
+                />
+                <EditableField
+                  value={listing.rooms}
+                  field="rooms"
+                  listingId={id}
+                  type="number"
+                  label="Pieces"
+                  onSaved={(v) => handleFieldSaved("rooms", v)}
+                />
+                <EditableField
+                  value={listing.cave || "non"}
+                  field="cave"
+                  listingId={id}
+                  type="select"
+                  options={CAVE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
+                  label="Cave"
+                  onSaved={(v) => handleFieldSaved("cave", v)}
+                />
+                <EditableField
+                  value={listing.parking || "non"}
+                  field="parking"
+                  listingId={id}
+                  type="select"
+                  options={PARKING_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
+                  label="Parking"
+                  onSaved={(v) => handleFieldSaved("parking", v)}
+                />
+                <EditableField
+                  value={listing.reference}
+                  field="reference"
+                  listingId={id}
+                  type="text"
+                  label="Reference"
+                  onSaved={(v) => handleFieldSaved("reference", v)}
+                />
                 {listing.source && (
                   <div>
-                    <span className="text-gray-500">Source</span>
+                    <span className="text-xs text-[#8A8A8A]">Source</span>
                     <p className="font-medium capitalize">{listing.source}</p>
                   </div>
                 )}
                 <div>
-                  <span className="text-gray-500">Ajoutee le</span>
+                  <span className="text-xs text-[#8A8A8A]">Ajoutee le</span>
                   <p className="font-medium">
                     {new Date(listing.createdAt).toLocaleDateString("fr-FR")}
                   </p>
                 </div>
               </div>
+            </div>
 
-              {listing.address && (
-                <>
-                  <Separator />
-                  <div>
-                    <span className="text-sm text-gray-500">Adresse</span>
-                    <p className="font-medium mt-1">{listing.address}</p>
-                    {mapsUrl && (
-                      <a
-                        href={mapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm text-emerald-600 hover:text-emerald-700 mt-2"
-                      >
-                        Voir sur Google Maps →
-                      </a>
-                    )}
-                  </div>
-                </>
-              )}
-
-              {listing.contactEmail && (
-                <>
-                  <Separator />
-                  <div>
-                    <span className="text-sm text-gray-500">
-                      Email de contact
-                    </span>
-                    <p className="font-medium mt-1">{listing.contactEmail}</p>
-                  </div>
-                </>
-              )}
-
-              {/* Actions: Email + Visite */}
-              <Separator />
-              <div className="flex flex-wrap gap-2">
-                <SendEmailDialog listing={listing} />
-                <ScheduleVisitDialog
-                  listing={{ id: listing.id, title: listing.title, address: listing.address }}
-                  onScheduled={fetchListing}
-                />
-              </div>
-
-              {listing.description && (
-                <>
-                  <Separator />
-                  <div>
-                    <span className="text-sm text-gray-500">Description</span>
-                    <p className="mt-1 text-gray-700 whitespace-pre-wrap">
-                      {listing.description}
-                    </p>
-                  </div>
-                </>
-              )}
-
-              {listing.notes && (
-                <>
-                  <Separator />
-                  <div>
-                    <span className="text-sm text-gray-500">
-                      Notes personnelles
-                    </span>
-                    <p className="mt-1 text-gray-700 whitespace-pre-wrap">
-                      {listing.notes}
-                    </p>
-                  </div>
-                </>
-              )}
-
-              {listing.url && (
-                <>
-                  <Separator />
-                  <a
-                    href={listing.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-emerald-600 hover:text-emerald-700"
-                  >
-                    Voir l&apos;annonce originale →
-                  </a>
-                </>
+            {/* Address */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              <EditableField
+                value={listing.address}
+                field="address"
+                listingId={id}
+                type="text"
+                label="Adresse"
+                onSaved={(v) => handleFieldSaved("address", v)}
+              />
+              {mapsUrl && (
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-[#5F9530] hover:text-[#4A7A25] mt-2"
+                >
+                  Voir sur Google Maps →
+                </a>
               )}
             </div>
+
+            {/* Contact email */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              <EditableField
+                value={listing.contactEmail}
+                field="contactEmail"
+                listingId={id}
+                type="text"
+                label="Email de contact"
+                onSaved={(v) => handleFieldSaved("contactEmail", v)}
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-wrap gap-2">
+              <SendEmailDialog listing={listing} />
+              <ScheduleVisitDialog
+                listing={{ id: listing.id, title: listing.title, address: listing.address }}
+                onScheduled={fetchListing}
+              />
+            </div>
+
+            {/* Description */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              <EditableField
+                value={listing.description}
+                field="description"
+                listingId={id}
+                type="textarea"
+                label="Description"
+                onSaved={(v) => handleFieldSaved("description", v)}
+              />
+            </div>
+
+            {/* Notes */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              <EditableField
+                value={listing.notes}
+                field="notes"
+                listingId={id}
+                type="textarea"
+                label="Notes personnelles"
+                onSaved={(v) => handleFieldSaved("notes", v)}
+              />
+            </div>
+
+            {/* Original listing link */}
+            {listing.url && (
+              <a
+                href={listing.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm text-[#5F9530] hover:text-[#4A7A25]"
+              >
+                Voir l&apos;annonce originale →
+              </a>
+            )}
           </div>
-        )}
+        </div>
       </main>
     </>
   );

@@ -23,12 +23,24 @@ export async function PUT(
   const { id } = await params;
   const body = await request.json();
 
-  // Auto-geocode if address changed and no coordinates provided
+  // Auto-geocode if address provided and no coordinates
   if (body.address && !body.latitude && !body.longitude) {
     const geo = await geocodeAddress(body.address);
     if (geo) {
       body.latitude = geo.latitude;
       body.longitude = geo.longitude;
+    }
+  }
+
+  // Re-geocode existing listing if it has an address but missing coordinates
+  if (!body.address && !body.latitude && !body.longitude) {
+    const existing = await prisma.listing.findUnique({ where: { id } });
+    if (existing?.address && !existing.latitude && !existing.longitude) {
+      const geo = await geocodeAddress(existing.address);
+      if (geo) {
+        body.latitude = geo.latitude;
+        body.longitude = geo.longitude;
+      }
     }
   }
 

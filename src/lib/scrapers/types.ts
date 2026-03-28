@@ -6,8 +6,12 @@ export interface ScrapedListing {
   address?: string;
   description?: string;
   photos?: string[];
+  cave?: string;
+  parking?: string;
   contactEmail?: string;
+  reference?: string;
   source?: string;
+  url?: string;
 }
 
 export interface ScraperPlugin {

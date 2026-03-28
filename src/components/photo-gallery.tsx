@@ -12,7 +12,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
 
   if (!photos.length) {
     return (
-      <div className="flex items-center justify-center h-64 rounded-xl bg-gray-100 text-gray-400">
+      <div className="flex items-center justify-center h-64 rounded-2xl bg-[#F0F0F0] text-[#8A8A8A]">
         Aucune photo
       </div>
     );
@@ -20,7 +20,7 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
 
   return (
     <div className="space-y-3">
-      <div className="relative aspect-video overflow-hidden rounded-xl bg-gray-100">
+      <div className="relative aspect-video overflow-hidden rounded-2xl bg-[#F0F0F0]">
         <Image
           src={photos[selected]}
           alt={`Photo ${selected + 1}`}
@@ -35,10 +35,10 @@ export function PhotoGallery({ photos }: PhotoGalleryProps) {
             <button
               key={i}
               onClick={() => setSelected(i)}
-              className={`relative h-16 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+              className={`relative h-16 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-colors ${
                 i === selected
-                  ? "border-emerald-500"
-                  : "border-transparent hover:border-gray-300"
+                  ? "border-[#CDEA68]"
+                  : "border-transparent hover:border-[#E5E5E5]"
               }`}
             >
               <Image

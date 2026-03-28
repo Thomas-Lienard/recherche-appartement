@@ -104,8 +104,8 @@ export function ScheduleVisitDialog({
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="rounded-lg bg-gray-50 p-3">
-              <p className="text-sm font-medium text-gray-900">
+            <div className="rounded-xl bg-[#F0F0F0] p-3">
+              <p className="text-sm font-medium text-[#1A1A1A]">
                 {listing.title || "Appartement"}
               </p>
               {listing.address && (

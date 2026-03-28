@@ -5,6 +5,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { StatusSelect } from "@/components/status-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export interface ListingFormData {
   title?: string;
@@ -17,6 +24,9 @@ export interface ListingFormData {
   contactEmail?: string;
   status?: string;
   notes?: string;
+  cave?: string;
+  parking?: string;
+  reference?: string;
   url?: string;
   source?: string;
 }
@@ -97,6 +107,51 @@ export function ListingForm({
         />
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid gap-2">
+          <Label>Cave</Label>
+          <Select
+            value={data.cave || "non"}
+            onValueChange={(v) => set("cave", v)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="non">Non / Non mentionne</SelectItem>
+              <SelectItem value="compris">Compris</SelectItem>
+              <SelectItem value="en_sus">En sus</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid gap-2">
+          <Label>Parking / Garage</Label>
+          <Select
+            value={data.parking || "non"}
+            onValueChange={(v) => set("parking", v)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="non">Non / Non mentionne</SelectItem>
+              <SelectItem value="compris">Compris</SelectItem>
+              <SelectItem value="en_sus">En sus</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="reference">Reference de l&apos;annonce</Label>
+        <Input
+          id="reference"
+          value={data.reference || ""}
+          onChange={(e) => set("reference", e.target.value)}
+          placeholder="REF-12345"
+        />
+      </div>
+
       <div className="grid gap-2">
         <Label htmlFor="contactEmail">Email de contact</Label>
         <Input
@@ -138,7 +193,7 @@ export function ListingForm({
       <Button
         onClick={onSubmit}
         disabled={loading}
-        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+        className=""
       >
         {loading ? "Enregistrement..." : submitLabel}
       </Button>

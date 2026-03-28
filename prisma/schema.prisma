@@ -4,11 +4,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "sqlserver"
 }
 
 model Listing {
   id              String    @id @default(cuid())
+  reference       String?
   url             String?
   source          String?
   title           String?
@@ -22,6 +23,8 @@ model Listing {
   photos          String    @default("[]")
   status          String    @default("Nouveau")
   notes           String?
+  cave            String?
+  parking         String?
   contactEmail    String?
   visitDate       DateTime?
   calendarEventId String?

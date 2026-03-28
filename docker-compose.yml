@@ -3,14 +3,7 @@ services:
     build: .
     ports:
       - "3000:3000"
-    volumes:
-      - app-data:/app/data
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=file:/app/data/app.db
-      - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_URL=http://localhost:3000
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-
-volumes:
-  app-data:
