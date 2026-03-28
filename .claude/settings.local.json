@@ -66,7 +66,11 @@
       "Bash(docker rm:*)",
       "Bash(echo:*)",
       "Bash(DATABASE_URL=\"sqlserver://sql-recherche-appartement.database.windows.net:1433;database=recherche-appartement;user=sqladmin;password=RechAppart2026!;encrypt=true;trustServerCertificate=false\" node -e \":*)",
-      "Bash(docker builder:*)"
+      "Bash(docker builder:*)",
+      "Bash(docker info:*)",
+      "Bash(az containerapp:*)",
+      "Bash(az resource:*)",
+      "Bash(docker push:*)"
     ]
   },
   "spinnerTipsEnabled": true

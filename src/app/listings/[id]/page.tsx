@@ -130,7 +130,13 @@ export default function ListingDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Photos */}
           <div>
-            <PhotoGallery photos={photos} />
+            <PhotoGallery
+              photos={photos}
+              listingId={id}
+              onPhotosChange={(newPhotos) =>
+                setListing({ ...listing, photos: JSON.stringify(newPhotos) })
+              }
+            />
           </div>
 
           {/* Info */}
@@ -297,16 +303,26 @@ export default function ListingDetailPage({
             </div>
 
             {/* Original listing link */}
-            {listing.url && (
-              <a
-                href={listing.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-[#5F9530] hover:text-[#4A7A25]"
-              >
-                Voir l&apos;annonce originale →
-              </a>
-            )}
+            <div className="bg-white rounded-2xl p-5 shadow-sm">
+              <EditableField
+                value={listing.url}
+                field="url"
+                listingId={id}
+                type="text"
+                label="URL de l'annonce"
+                onSaved={(v) => handleFieldSaved("url", v)}
+              />
+              {listing.url && (
+                <a
+                  href={listing.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-[#5F9530] hover:text-[#4A7A25] mt-2"
+                >
+                  Voir l&apos;annonce originale →
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </main>
